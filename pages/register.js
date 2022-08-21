@@ -5,6 +5,7 @@ import Router from 'next/router';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser, setUser } from '../redux/userSlice';
+import { getError } from '../utils/error';
 
 function Register() {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ function Register() {
         Router.push('/login');
       }
     } catch (e) {
-      alert(e.response.data);
+      alert(getError(e));
     }
   };
 

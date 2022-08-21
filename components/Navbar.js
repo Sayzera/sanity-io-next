@@ -8,6 +8,7 @@ import {
   XIcon,
   ShoppingBagIcon,
   LoginIcon,
+  LogoutIcon,
 } from '@heroicons/react/outline';
 import Link from 'next/link';
 import jsCookie from 'js-cookie';
@@ -20,8 +21,10 @@ import {
   DARK_MODE_OFF,
   selectDarkMode,
   selectCart,
+  setEmptyCart,
 } from '../redux/mainSlice';
 import dynamic from 'next/dynamic';
+import { selectUser, logout } from '../redux/userSlice';
 
 const navigation = [{ name: 'Home', href: '/', current: true }];
 
@@ -32,6 +35,7 @@ function classNames(...classes) {
 function Navbar() {
   const dispatch = useDispatch();
   const darkMode = useSelector(selectDarkMode);
+  const user = useSelector(selectUser);
   const { items } = useSelector(selectCart);
 
   const darkModeChangeHandler = () => {
@@ -105,22 +109,110 @@ function Navbar() {
                     aria-hidden="true"
                   />
 
-                  {items.length > 0 && (
+                  {items?.length > 0 && (
                     <span className="absolute bottom-3  left-6 bg-red-500 text-white px-2 py-1 rounded-full text-sm">
                       {items?.reduce((a, c) => a + c.quantity, 0)}
                     </span>
                   )}
                 </button>
+                {user ? (
+                  <button
+                    type="button"
+                    className="bg-gray-800 p-1 ml-4 rounded-full text-gray-400 hover:text-white focus:outline-none ring-1 ring-offset-2 focus:ring-offset-gray-800 ring-white 
+                    relative
+                    "
+                    onClick={() => {
+                      dispatch(logout());
+                      dispatch(setEmptyCart());
 
-                <button
-                  type="button"
-                  className="bg-gray-800 p-1 ml-4 rounded-full text-gray-400 hover:text-white focus:outline-none ring-1 ring-offset-2 focus:ring-offset-gray-800 ring-white 
-                  relative
-                  "
-                  onClick={() => Router.push('/login')}
-                >
-                  <LoginIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                      Router.push('/');
+                    }}
+                  >
+                    <LogoutIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="bg-gray-800 p-1 ml-4 rounded-full text-gray-400 hover:text-white focus:outline-none ring-1 ring-offset-2 focus:ring-offset-gray-800 ring-white 
+                    relative
+                    "
+                    onClick={() => Router.push('/login')}
+                  >
+                    <LoginIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                )}
+
+                {/* Profile dropdown */}
+                {user && (
+                  <Menu as="div" className="ml-3 relative">
+                    <div>
+                      <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                        <span className="sr-only">Open user menu</span>
+                        <img
+                          className="h-8 w-8 rounded-full"
+                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          alt=""
+                        />
+                      </Menu.Button>
+                    </div>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="z-10 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
+                              )}
+                            >
+                              Your Profile
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
+                              )}
+                            >
+                              Settings
+                            </a>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? 'bg-gray-100' : '',
+                                'block px-4 py-2 text-sm text-gray-700'
+                              )}
+                              onClick={() => {
+                                dispatch(logout());
+                                dispatch(setEmptyCart());
+                                Router.push('/');
+                              }}
+                            >
+                              Sign out
+                            </a>
+                          )}
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                )}
               </div>
             </div>
           </div>

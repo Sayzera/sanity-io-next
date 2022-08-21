@@ -1,7 +1,40 @@
+import Cookies from 'js-cookie';
 import Link from 'next/link';
+import Router, { useRouter } from 'next/router';
 import React from 'react';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUser, setUser } from '../redux/userSlice';
+import axios from 'axios';
 function Login() {
+  const user = useSelector(selectUser);
+  const router = useRouter();
+  const { redirect } = router.query;
+  React.useEffect(() => {
+    if (user) {
+      router.push(redirect || '/');
+    }
+  }, [router, user]);
+
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  const dispatch = useDispatch();
+  const submitHandler = async () => {
+    try {
+      const { data } = await axios.post('/api/users/login', {
+        email,
+        password,
+      });
+
+      Cookies.set('userInfo', JSON.stringify(data));
+      dispatch(setUser(data));
+
+      Router.push(redirect || '/');
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className="container mx-auto  py-3 px-4">
       <div>
@@ -16,6 +49,7 @@ function Login() {
         <input
           type="email"
           id="email"
+          onChange={(e) => setEmail(e.target.value)}
           className="border
            border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-yellow-500
             focus:border-yellow-500 block w-full p-2.5
@@ -34,6 +68,7 @@ function Login() {
         <input
           type="password"
           id="password"
+          onChange={(e) => setPassword(e.target.value)}
           className="border
            border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-yellow-500
             focus:border-yellow-500 block w-full p-2.5
@@ -42,7 +77,10 @@ function Login() {
       </div>
 
       <div>
-        <button className="border w-full mt-4 py-3  focus:border-yellow-700 focus:bg-yellow-300 focus:text-white focus:font-extrabold rounded-lg ">
+        <button
+          onClick={() => submitHandler()}
+          className="border w-full mt-4 py-3  focus:border-yellow-700 focus:bg-yellow-300 focus:text-white focus:font-extrabold rounded-lg "
+        >
           LOGIN
         </button>
       </div>

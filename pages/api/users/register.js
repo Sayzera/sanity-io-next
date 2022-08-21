@@ -18,6 +18,11 @@ async function alreayExists(email) {
 handler.post(async (req, res) => {
   let emailExists = await alreayExists(req.body.email);
 
+  if (!req.body.email || !req.body.password) {
+    res.status(400).send({
+      message: 'Please fill out all fields',
+    });
+  }
   if (emailExists.length > 0) {
     res.status(400).send('Email already exists');
   }

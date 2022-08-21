@@ -59,6 +59,10 @@ const darkModeSlice = createSlice({
 
       Cookies.set('cart', JSON.stringify(state.cart.items));
     },
+
+    setEmptyCart: (state, action) => {
+      state.cart.items = null;
+    },
   },
 });
 
@@ -68,6 +72,7 @@ export const {
   addToCart,
   changeToCartQuantity,
   removeFromCart,
+  setEmptyCart,
 } = darkModeSlice.actions;
 
 // Selectors

@@ -12,11 +12,16 @@ const userSlice = createSlice({
     setUser: (state, action) => {
       state.user = action.payload;
     },
+    logout: (state, action) => {
+      state.user = null;
+      Cookies.remove('userInfo');
+      Cookies.remove('cart');
+    },
   },
 });
 
 // Selectors
 export const selectUser = (state) => state.user.user;
 
-export const { setUser } = userSlice.actions;
+export const { setUser, logout } = userSlice.actions;
 export default userSlice.reducer;
